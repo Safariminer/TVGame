@@ -24,4 +24,4 @@ Dead Weather is a game where you have to defend a local TV station from a ghost 
 Trans Girl Toolkit / TGTK is an engine I've been cooking for the past few months. Its code is... uh... considered abstract art and is reminiscent of Jackson Pollock paintings.
 
 ## License
-All rights reserved. For now at least.
+The engine code is MIT. The assets are under all rights reserved™.
