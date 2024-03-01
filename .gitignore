@@ -1,0 +1,6 @@
+tgtk/builds/*
+tgtk/x64/*
+tgtk/massshoot/x64/*
+tgtk/edwyplanner/x64/*
+tgtk/include
+tgtk/.vs/*

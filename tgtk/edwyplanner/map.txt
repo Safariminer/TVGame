@@ -1,0 +1,7 @@
+-55 -1000 -55 55 0 55 grass
+5 0 0 10 10 5 concrete
+10 5 0 30 10 5 concrete
+5 10 0 10 20 5 concrete
+10 15 0 20 20 5 concrete
+10 15 15 15 20 20 concrete
+10 15 25 25 20 30 concrete

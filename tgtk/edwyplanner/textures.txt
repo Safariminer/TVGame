@@ -1,0 +1,3 @@
+grass ../massshoot/massshoot/textures/grass.png
+concrete ../massshoot/massshoot/textures/concrete.png
+tiles ../massshoot/massshoot/textures/tiles.png

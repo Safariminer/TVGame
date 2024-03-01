@@ -1,0 +1,21 @@
+Thank you for playing MassShoot!
+
+So uh... you aren't REALLY supposed to read this file but uh... fuck it, might as well.
+
+The way the engine's first map is loaded is by reading the last line of this file. That way, we can hide stuff inside of it.
+
+The creepiest part of the engine is when I ironically created a shrine to Neil Cicierega but the engine didn't want to load any
+map OTHER THAN the shrine. 
+
+Anyways, @ me on Twitter (@safariminer) and I may or may not send something funny.
+
+Peace,
+- Safari <3
+
+
+
+
+
+
+ps: the first map is
+prologue_01

@@ -1,0 +1,9 @@
+grass massshoot/textures/grass.png
+grassmega massshoot/textures/grassmega.png
+concrete massshoot/textures/concrete.png
+tiles massshoot/textures/tiles.png
+wood massshoot/textures/wood.png
+wood2 massshoot/textures/wood2.png
+inftower_building massshoot/textures/inftower_building.png
+inftower_sign massshoot/textures/inftower_sign.png
+funeralhome_sign massshoot/textures/funeralhome_sign.png
