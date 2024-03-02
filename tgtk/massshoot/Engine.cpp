@@ -75,7 +75,7 @@ VITAL_FUNC MassShoot::Engine::Log(int msgType, const char* text, va_list args)
     char buffer[256];
     vsnprintf(buffer, 256, text, args);
     newLogLine += buffer;
-    system(TextFormat("echo %s\"%s\" > log.txt", exec("type log.txt").c_str(), newLogLine.c_str()));
+    // system(TextFormat("echo %s\"%s\" > log.txt", exec("type log.txt").c_str(), newLogLine.c_str()));
     
     newLogLine += "\n";
     Logs += newLogLine;

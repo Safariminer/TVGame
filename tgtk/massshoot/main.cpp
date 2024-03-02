@@ -49,7 +49,7 @@ int monitor = 0;
 bool unlockResolution = false;
 bool windowed = true;
 
-int main(int argc, char** argv) {
+int WinMain(int argc, char** argv) {
 	monitor = GetCurrentMonitor();
 	MassShoot::Scripting::InitChai();
 
@@ -119,8 +119,9 @@ int main(int argc, char** argv) {
 			BeginDrawing();
 
 			ClearBackground(BLACK);
-			DrawTextEx(titleFont, GAMENAME, {(float)GetScreenWidth()/2-175, (float)GetScreenHeight()/2-200}, 40, 0, WHITE);
-			DrawTextEx(textFont, "This game is currently in development. Gameplay elements are subject\nto change.\n\nPress Enter to continue.", { (float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 - 100 }, 20, 0, WHITE);
+			// DrawTextEx(titleFont, GAMENAME, {(float)GetScreenWidth()/2-175, (float)GetScreenHeight()/2-200}, 40, 0, WHITE);
+			// DrawTextEx(textFont, "This game is currently in development. Gameplay elements are subject\nto change.\n\nPress Enter to continue.", { (float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 - 100 }, 20, 0, WHITE);
+			DrawTexture(startup, 0, 0, WHITE);
 			if(IsKeyPressed(KEY_ENTER)){
 				map.LoadMap("background");
 				menuEnum = 1;
