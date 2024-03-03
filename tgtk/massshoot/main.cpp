@@ -48,7 +48,9 @@ int monitor = 0;
 
 bool unlockResolution = false;
 bool windowed = true;
-
+bool isNight = false;
+int nights = 0;
+int playerHealth = 100;
 int WinMain(int argc, char** argv) {
 	monitor = GetCurrentMonitor();
 	MassShoot::Scripting::InitChai();
@@ -58,7 +60,7 @@ int WinMain(int argc, char** argv) {
 	MassShoot::Engine::InitEngine(640, 480, 60, GAMENAME);
 
 	TVGame::GhostHandler ghostHandler;
-	ghostHandler.SpawnGhosts(100);
+	// ghostHandler.SpawnGhosts(100);
 
 	// MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox.png");
 	MassShoot::Camera::InitCamera();
@@ -193,12 +195,34 @@ int WinMain(int argc, char** argv) {
 			
 			// DrawGrid(10, 1.0f);
 			//                                     bhop        new ground collider
-			MassShoot::Camera::CameraMovement(map, false, true, false);
+			MassShoot::Camera::CameraMovement(map, false, true, true);
 			//                                           advanced physics
 
 			map.RenderBoxes();
 			map.RenderBillboards();
-			ghostHandler.GhostsUpdate(MassShoot::Camera::GetCameraPosition());
+			
+			// DrawRay(GetMouseRay({ (float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, MassShoot::Camera::GetCamera()), RED);
+			
+			if (!isNight) {
+				if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L)) {
+					isNight = true;
+					MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox3.png");
+					nights++;
+					ghostHandler.SpawnGhosts(10 * nights);
+				}
+			}
+			
+			if (isNight) {
+				ghostHandler.GhostsUpdate(MassShoot::Camera::GetCameraPosition());
+				if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+					ghostHandler.CheckForHarmedGhosts(GetMouseRay({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() / 2 }, MassShoot::Camera::GetCamera()));
+				}
+				if (ghostHandler.GetGhostCount() == 0) {
+					MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox2.png");
+					isNight = false;
+				}
+			}
+			
 			MassShoot::Camera::StopCameraFrame();
 			if (map.shaded) {
 				EndTextureMode();
@@ -225,15 +249,33 @@ int WinMain(int argc, char** argv) {
 			if (!isPaused) { 
 				headsUpDisplay.FrameFunc();
 			}
+			if (isNight) {
 
+				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i", ghostHandler.GetGhostCount(), nights), { 10, 10 }, 50, 0, BLACK);
+				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i", ghostHandler.GetGhostCount(), nights), {0, 0}, 50, 0, WHITE);
+			}
 			MassShoot::StoryTools::DisplayTitle(map.title, map.subtitle);
 
-			Vector3 camPos = MassShoot::Camera::GetCameraPosition();
+			// Vector3 camPos = MassShoot::Camera::GetCameraPosition();
 			// printf("X: %f | Y: %f | Z: %f\n", camPos.x, camPos.y, camPos.z);
 
-			DrawFPS(200, 0);
-			MassShoot::Camera::GravityDisplay();
+			// DrawFPS(200, 0);
+			// MassShoot::Camera::GravityDisplay();
 			
+			break;
+		case 3:
+			BeginDrawing();
+			ClearBackground({ 12, 37, 25, 255 });
+			DrawTextEx(titleFont, "Hijacked.", { 12, 12 }, 72, 0, {100, 0, 0, 255});
+			DrawTextEx(titleFont, "Hijacked.", { 10, 10 }, 72, 0, RED);
+			DrawTextEx(textFont, "Press ENTER to return to Main Menu...", { 12, 102 }, 20, 0, {100,0,0,255});
+			DrawTextEx(textFont, "Press ENTER to return to Main Menu...", { 10, 100 }, 20, 0, RED);
+			if (IsKeyPressed(KEY_ENTER)) {
+				menuEnum = 1;
+				playerHealth = 100;
+				nights = 0;
+			}
+			EndDrawing();
 			break;
 		}
 		MassShoot::Engine::Console();

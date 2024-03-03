@@ -21,6 +21,11 @@ Music wind;
 Sound stomp;
 Vector3 gravity = { 0,0,0 };
 
+Camera MassShoot::Camera::GetCamera()
+{
+	return camera;
+}
+
 BoundingBox MassShoot::Camera::GetCollider() {
 	return playerCollider;
 }

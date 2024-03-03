@@ -1,1 +1,1 @@
-massshoot/textures/skybox3.png
+massshoot/textures/skybox2.png

@@ -1,4 +1,2 @@
-Title: https://www.dafont.com/super-onigiri.font
-Text: https://github.com/orioncactus/pretendard
-Small text: https://www.dafont.com/pixelary.font
+Highway Gothic. And VCR OSD Mono.
 Console: https://github.com/slavfox/Cozette

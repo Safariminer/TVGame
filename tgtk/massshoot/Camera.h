@@ -1,8 +1,10 @@
 #pragma once
 #include "defines.h"
 #include "Map.h"
+#include <raylib.h>
 namespace MassShoot {
 	namespace Camera {
+		Camera3D GetCamera();
 		BoundingBox GetCollider();
 		LOADING_FUNC InitCamera();
 		INPUT_FUNC LockCamera();

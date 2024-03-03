@@ -1,6 +1,7 @@
 #include "Ghost.h"
 #include <raylib.h>
 #include <iostream>
+#include <raymath.h>
 
 bool GhostHandlerAvailable = false;
 
@@ -20,7 +21,7 @@ void TVGame::Ghost::RenderGhost() {
 		std::cout << "Error: no ghost handler available for ghost rendering.";
 		return;
 	}
-	DrawModel(ghostModel, position, 1, WHITE);
+	DrawModel(ghostModel, position, 1, {(unsigned char)health,(unsigned char)health, (unsigned char)health, 255});
 }
 
 void TVGame::GhostHandler::GhostHandlerInit() {
@@ -45,12 +46,33 @@ void TVGame::GhostHandler::SpawnGhosts(int number) {
 	}
 }
 
-void TVGame::GhostHandler::CheckForGhostCollision(BoundingBox playerCollision) {
-	// todo: this
+int TVGame::GhostHandler::CheckForGhostCollision(BoundingBox playerCollision) {
+	int collisions;
+	BoundingBox ghostBoundingBox = GetMeshBoundingBox(ghostModel.meshes[0]);
+	for (int i = 0; i < ghosts.size(); i++) {
+		BoundingBox currentBoundingBox;
+		currentBoundingBox.min = Vector3Add(ghostBoundingBox.min, ghosts.at(i).position);
+		currentBoundingBox.max = Vector3Add(ghostBoundingBox.max, ghosts.at(i).position);
+		if (CheckCollisionBoxes(currentBoundingBox, playerCollision)) collisions++;
+	}
+	return collisions;
 }
 
 void TVGame::GhostHandler::CheckForHarmedGhosts(Ray ray) {
-	// todo: this
+	BoundingBox ghostBoundingBox = GetMeshBoundingBox(ghostModel.meshes[0]);
+	for (int i = 0; i < ghosts.size(); i++) {
+		BoundingBox currentBoundingBox;
+		currentBoundingBox.min = Vector3Add(ghostBoundingBox.min, ghosts.at(i).position);
+		currentBoundingBox.max = Vector3Add(ghostBoundingBox.max, ghosts.at(i).position);
+		RayCollision collision = GetRayCollisionBox(ray, currentBoundingBox);
+		if (collision.hit) {
+			ghosts.at(i).health-=10;
+		}
+		if (ghosts.at(i).health <= 0) { 
+			ghosts.erase(ghosts.begin() + i);
+			i--;
+		}
+	}
 }
 
 void TVGame::GhostHandler::GhostsUpdate(Vector3 camera) {
@@ -58,4 +80,9 @@ void TVGame::GhostHandler::GhostsUpdate(Vector3 camera) {
 		ghosts.at(i).CalculateNextPos(camera);
 		ghosts.at(i).RenderGhost();
 	}
+}
+
+int TVGame::GhostHandler::GetGhostCount()
+{
+	return ghosts.size();
 }

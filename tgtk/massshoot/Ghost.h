@@ -18,8 +18,9 @@ namespace TVGame {
 		GhostHandler() { GhostHandlerInit(); }
 		~GhostHandler();
 		void SpawnGhosts(int number);
-		void CheckForGhostCollision(BoundingBox playerCollision);
+		int CheckForGhostCollision(BoundingBox playerCollision);
 		void CheckForHarmedGhosts(Ray ray);
 		void GhostsUpdate(Vector3 camera);
+		int GetGhostCount();
 	};
 }
