@@ -47,7 +47,7 @@ void TVGame::GhostHandler::SpawnGhosts(int number) {
 }
 
 int TVGame::GhostHandler::CheckForGhostCollision(BoundingBox playerCollision) {
-	int collisions;
+	int collisions = 0;
 	BoundingBox ghostBoundingBox = GetMeshBoundingBox(ghostModel.meshes[0]);
 	for (int i = 0; i < ghosts.size(); i++) {
 		BoundingBox currentBoundingBox;
