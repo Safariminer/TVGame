@@ -16,7 +16,7 @@
 #include <string>
 #include "titles.h"
 #include "ExternMap.h"
-
+#include <filesystem>
 #include "Ghost.h"
 
 
@@ -54,7 +54,17 @@ int playerHealth = 100;
 int WinMain(int argc, char** argv) {
 	monitor = GetCurrentMonitor();
 	MassShoot::Scripting::InitChai();
-
+	if (!std::filesystem::exists("highscore.tgtk")) {
+		std::ofstream hsfile("highscore.tgtk");
+		hsfile << "0";
+		hsfile.close();
+	}
+	int highscore;
+	{
+		std::ifstream hsfile("highscore.tgtk");
+		hsfile >> highscore;
+		hsfile.close();
+	}
 	// suite.upgrades.push_back({ "Reload", "MassShoot_SetAmmo(100);", KEY_Q });
 
 	MassShoot::Engine::InitEngine(640, 480, 60, GAMENAME);
@@ -68,6 +78,10 @@ int WinMain(int argc, char** argv) {
 
 	MassShoot::Fonts::LoadFonts();
 	Texture2D startup = LoadTexture("massshoot/menus/startup.png");
+	Texture2D logo = LoadTexture("massshoot/menus/logo.png");
+	Texture2D windowedIcon = LoadTexture("massshoot/menus/windowed.png");
+	Texture2D unwindowedIcon = LoadTexture("massshoot/menus/unwindowed.png");
+	Texture2D townLocator = LoadTexture("massshoot/menus/townlocator.png");
 	gunshot = LoadSound("massshoot/sounds/smg.wav");
 
 	PauseMenu pauseMenu;
@@ -106,6 +120,12 @@ int WinMain(int argc, char** argv) {
 		SetExitKey(0);
 		// map.UpdateLighting(MassShoot::Camera::GetCameraPosition());
 
+		if (IsKeyDown(KEY_LEFT_ALT)) {
+			if (IsKeyPressed(KEY_ENTER)) {
+				windowed = !windowed;
+			}
+		}
+
 		if (!unlockResolution && windowed) {
 			if (GetScreenWidth() != 640 || GetScreenHeight() != 480) SetWindowSize(640, 480);
 		}
@@ -131,35 +151,70 @@ int WinMain(int argc, char** argv) {
 			}
 			break;
 		case 1:
-			BeginTextureMode(rttarget);
-			
-			MassShoot::Camera::StartCameraFrame();
-			MassShoot::Skybox::DrawSkybox();
-			ClearBackground({ 102, 146, 212, 255 });
-			map.RenderBoxes();
-			MassShoot::Camera::StopCameraFrame();
-			EndTextureMode();
-
-
+			// BeginTextureMode(rttarget);
 			BeginDrawing();
+			MassShoot::Camera::StartCameraFrame();
+			// MassShoot::Skybox::DrawSkybox();
+			// ClearBackground({ 102, 146, 212, 255 });
 			ClearBackground(DARKBLUE);
+			// DrawSphere({ 500, -1000, 500 }, 1000, DARKGREEN);
+			// map.RenderBoxes();
+			MassShoot::Camera::StopCameraFrame();
+			// EndTextureMode();
+			DrawCircle(GetScreenWidth() / 2, GetScreenHeight(), GetScreenHeight() / 1.5, DARKGREEN);
+			DrawTextureEx(townLocator, { (float)GetScreenWidth() / 5, (float)GetScreenHeight() / 2 }, 0, 0.5f, WHITE);
+			DrawTextEx(textFont, "Play Game", { (float)GetScreenWidth() / 5 + 100, (float)GetScreenHeight() / 2 }, 20, 0, WHITE);
+			DrawTextureEx(townLocator, { (float)GetScreenWidth() - ((float)GetScreenWidth() / 5) *2, (float)GetScreenHeight() / 2 }, 0, 0.5f, WHITE);
+			DrawTextEx(textFont, "Quit Game", { (float)GetScreenWidth() - ((float)GetScreenWidth() / 5) * 2 + 100, (float)GetScreenHeight() / 2 - 10}, 20, 0, WHITE);
+			
+			if (windowed) {
+				DrawRectangle(0, 400, 640, 80, WHITE);
+				DrawTextureEx(logo, {460, 400}, 0, 0.7, WHITE);
+				DrawRectangle(0, 400, 460, 80, BLUE);
+				DrawTextEx(textFont, TextFormat("High score: %i nights", highscore), { 12, 432 }, 20, 0, DARKBLUE);
+				DrawTextEx(textFont, TextFormat("High score: %i nights", highscore), { 10, 430 }, 20, 0, WHITE);
+			}
+			else {
+				DrawRectangle(0, GetScreenHeight() - 80, GetScreenWidth(), 80, WHITE);
+				DrawTextureEx(logo, { (float)GetScreenWidth()-180, (float)GetScreenHeight()-80}, 0, 0.7, WHITE);
+				DrawRectangle(0, 0, 180, GetScreenHeight(), BLUE);
+				DrawRectangle(0, GetScreenHeight()-80, GetScreenWidth()-180, 80, BLUE);
+				DrawTextEx(textFont, TextFormat("High score: %i nights", highscore), { 12, (float)GetScreenHeight() - 48}, 20, 0, DARKBLUE);
+				DrawTextEx(textFont, TextFormat("High score: %i nights", highscore), { 10, (float)GetScreenHeight() - 50}, 20, 0, WHITE);
+			}
+			
+			
 			UpdateMusicStream(mainMenuMusic);
 			// BeginShaderMode(bloom);
 			// DrawTextureRec(rttarget.texture, { 0, 0, (float)rttarget.texture.width, -(float)rttarget.texture.height },  { 0, 0 }, WHITE);
 			// EndShaderMode();
-			DrawTextEx(titleFont, GAMENAME, { 10, 10 }, 80, 0, BLACK);
-			DrawTextEx(textFont, "Press Enter to continue...", { 10, 100 }, 20, 0, BLACK);
-			DrawRectangle(GetScreenWidth() - 10, GetScreenHeight() - 10, 10, 10, (windowed) ? GREEN : RED);
-			if (IsKeyPressed(KEY_ENTER)) {
+			// DrawTextEx(titleFont, GAMENAME, { 10, 10 }, 80, 0, BLACK);
+			// DrawTextEx(textFont, TextFormat("Press Enter to continue...\nHigh Score: %i nights", highscore), { 10, 100 }, 20, 0, BLACK);
+			// DrawRectangle(GetScreenWidth() - 10, GetScreenHeight() - 10, 10, 10, (windowed) ? GREEN : RED);
+			/*if (IsKeyPressed(KEY_ENTER)) {
 				menuEnum = 2;
 				MassShoot::Camera::InitCamera();
 				suite.upgrades.clear();
 				map.LoadMap(firstmap);
 				StopMusicStream(mainMenuMusic);
 				MassShoot::Camera::LockCamera();
-			}
+			}*/
+			DrawTexture((windowed) ? windowedIcon : unwindowedIcon, GetScreenWidth() - 32, 0, WHITE);
 			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-				if (GetMouseX() > GetScreenWidth() - 10 && GetMouseY() > GetScreenHeight() - 10) windowed = !windowed;
+				if (GetMouseX() > GetScreenWidth() - 32 && GetMouseY() < 32) windowed = !windowed;
+				if (GetMouseX() > GetScreenWidth() / 5 && GetMouseX() < GetScreenWidth() / 5 + 128 &&
+					GetMouseY() > (float)GetScreenHeight() / 2 && GetMouseY() < (float)GetScreenHeight() / 2 + 128) {
+					menuEnum = 2;
+					MassShoot::Camera::InitCamera();
+					suite.upgrades.clear();
+					map.LoadMap(firstmap);
+					StopMusicStream(mainMenuMusic);
+					MassShoot::Camera::LockCamera();
+				}
+				if (GetMouseX() > (float)GetScreenWidth() - ((float)GetScreenWidth() / 5) * 2 && GetMouseX() < (float)GetScreenWidth() - ((float)GetScreenWidth() / 5) * 2 + 128 &&
+					GetMouseY() > (float)GetScreenHeight() / 2 - 10 && GetMouseY() < (float)GetScreenHeight() / 2 + 118) {
+					return 0;
+				}
 			}
 			break;
 		case 2:
@@ -208,12 +263,14 @@ int WinMain(int argc, char** argv) {
 					isNight = true;
 					MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox3.png");
 					nights++;
-					ghostHandler.SpawnGhosts(10 * nights);
+					ghostHandler.SpawnGhosts(5 * nights * nights);
+					// playerHealth = 100;
 				}
 			}
 			
 			if (isNight) {
 				ghostHandler.GhostsUpdate(MassShoot::Camera::GetCameraPosition());
+				playerHealth -= ghostHandler.CheckForGhostCollision(MassShoot::Camera::GetCollider());
 				if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 					ghostHandler.CheckForHarmedGhosts(GetMouseRay({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() / 2 }, MassShoot::Camera::GetCamera()));
 				}
@@ -221,6 +278,10 @@ int WinMain(int argc, char** argv) {
 					MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox2.png");
 					isNight = false;
 				}
+				if (playerHealth <= 0) {
+					menuEnum = 3;
+				}
+				
 			}
 			
 			MassShoot::Camera::StopCameraFrame();
@@ -251,15 +312,15 @@ int WinMain(int argc, char** argv) {
 			}
 			if (isNight) {
 
-				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i", ghostHandler.GetGhostCount(), nights), { 10, 10 }, 50, 0, BLACK);
-				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i", ghostHandler.GetGhostCount(), nights), {0, 0}, 50, 0, WHITE);
+				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i\nHealth: %i", ghostHandler.GetGhostCount(), nights, playerHealth), { 10, 10 }, 30, 0, BLACK);
+				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i\nHealth: %i", ghostHandler.GetGhostCount(), nights, playerHealth), {0, 0}, 30, 0, WHITE);
 			}
 			MassShoot::StoryTools::DisplayTitle(map.title, map.subtitle);
-
+			DrawText("+", (GetScreenWidth() / 2) - 3, (GetScreenHeight() / 2) - 3, 6, WHITE);
 			// Vector3 camPos = MassShoot::Camera::GetCameraPosition();
 			// printf("X: %f | Y: %f | Z: %f\n", camPos.x, camPos.y, camPos.z);
 
-			// DrawFPS(200, 0);
+			DrawFPS(1000, 0);
 			// MassShoot::Camera::GravityDisplay();
 			
 			break;
@@ -268,14 +329,29 @@ int WinMain(int argc, char** argv) {
 			ClearBackground({ 12, 37, 25, 255 });
 			DrawTextEx(titleFont, "Hijacked.", { 12, 12 }, 72, 0, {100, 0, 0, 255});
 			DrawTextEx(titleFont, "Hijacked.", { 10, 10 }, 72, 0, RED);
-			DrawTextEx(textFont, "Press ENTER to return to Main Menu...", { 12, 102 }, 20, 0, {100,0,0,255});
-			DrawTextEx(textFont, "Press ENTER to return to Main Menu...", { 10, 100 }, 20, 0, RED);
+			DrawTextEx(textFont, TextFormat("Your score: %i\n\nPress ENTER to return to Main Menu...", nights), { 12, 102 }, 20, 0, {100,0,0,255});
+			DrawTextEx(textFont, TextFormat("Your score: %i\n\nPress ENTER to return to Main Menu...", nights), { 10, 100 }, 20, 0, RED);
+			if (nights > highscore) {
+				DrawTextEx(textFont, "HIGH SCORE!", { 12, (float)GetScreenHeight() - 78 }, 70, 0, {100,0,0,255});
+				DrawTextEx(textFont, "HIGH SCORE!", { 10, (float)GetScreenHeight() - 80 }, 70, 0, RED);
+			}
+			
 			if (IsKeyPressed(KEY_ENTER)) {
+				if(nights > highscore)
+				{
+					std::ofstream hsfile("highscore.tgtk");
+					hsfile << nights;
+					hsfile.close();
+					highscore = nights;
+				}
+				MassShoot::Camera::InitCamera();
 				menuEnum = 1;
 				playerHealth = 100;
 				nights = 0;
+				MassShoot::Camera::UnlockCamera();
 			}
 			EndDrawing();
+			
 			break;
 		}
 		MassShoot::Engine::Console();
