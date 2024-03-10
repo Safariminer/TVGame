@@ -16,7 +16,7 @@ UI_FUNC Shop::FrameFunc()
 		Vector2 mousePos = GetMousePosition();
 		if (mousePos.x > 54 && mousePos.y > 104 && mousePos.x < GetScreenWidth() - 54 && mousePos.y < 164) {
 			if (mousePos.y < 134 && money >= 10) {
-				playerHealth += 25;
+				playerHealth += 5;
 				money -= 10;
 			}
 			else if(money >= 20) {

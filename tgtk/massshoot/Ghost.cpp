@@ -371,7 +371,7 @@ void TVGame::GhostHandler::SpawnGhosts(int number) {
 	for (int i = 0; i < number; i++) {
 		Ghost ghost;
 		ghost.health = 100;
-		ghost.speed = (float)GetRandomValue(1, 100) / 1000;
+		ghost.speed = (float)GetRandomValue(50, 150) / 1000;
 		ghost.position = { (float)GetRandomValue(-100, 100), (float)GetRandomValue(10, 100) , (float)GetRandomValue(-100, 100) };
 		ghosts.push_back(ghost);
 	}
