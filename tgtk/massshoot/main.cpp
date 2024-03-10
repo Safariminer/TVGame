@@ -51,7 +51,8 @@ bool windowed = true;
 bool isNight = false;
 int nights = 0;
 int playerHealth = 100;
-int WinMain(int argc, char** argv) {
+bool debugMenu = false;
+int main(int argc, char** argv) {
 	monitor = GetCurrentMonitor();
 	MassShoot::Scripting::InitChai();
 	if (!std::filesystem::exists("highscore.tgtk")) {
@@ -95,10 +96,12 @@ int WinMain(int argc, char** argv) {
 	bool isPaused = false;
 
 	// Music music = LoadMusicStream("massshoot/music/Motherlode.mp3");
-	Music mainMenuMusic = LoadMusicStream("massshoot/music/mainmenu.wav");
+	Music splashMusic = LoadMusicStream("massshoot/music/splash.mp3");
+	Music mainMenuMusic = LoadMusicStream("massshoot/music/mainmenu.mp3");
+	Sound startGame = LoadSound("massshoot/music/startgame.mp3");
 	MassShoot::Weapons::InitWeaponCamera();
 	
-	
+	PlayMusicStream(splashMusic);
 	
 	
 	// PlayMusicStream(music);
@@ -138,6 +141,7 @@ int WinMain(int argc, char** argv) {
 
 		switch(menuEnum){
 		case 0:
+			UpdateMusicStream(splashMusic);
 			BeginDrawing();
 
 			ClearBackground(BLACK);
@@ -147,7 +151,9 @@ int WinMain(int argc, char** argv) {
 			if(IsKeyPressed(KEY_ENTER)){
 				map.LoadMap("background");
 				menuEnum = 1;
+				StopMusicStream(splashMusic);
 				PlayMusicStream(mainMenuMusic);
+				
 			}
 			break;
 		case 1:
@@ -209,6 +215,7 @@ int WinMain(int argc, char** argv) {
 					suite.upgrades.clear();
 					map.LoadMap(firstmap);
 					StopMusicStream(mainMenuMusic);
+					PlaySound(startGame);
 					MassShoot::Camera::LockCamera();
 				}
 				if (GetMouseX() > (float)GetScreenWidth() - ((float)GetScreenWidth() / 5) * 2 && GetMouseX() < (float)GetScreenWidth() - ((float)GetScreenWidth() / 5) * 2 + 128 &&
@@ -258,6 +265,34 @@ int WinMain(int argc, char** argv) {
 			
 			// DrawRay(GetMouseRay({ (float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, MassShoot::Camera::GetCamera()), RED);
 			
+			if (IsKeyDown(KEY_LEFT_CONTROL)) {
+				if (IsKeyPressed(KEY_EQUAL)) nights++;
+				if (IsKeyPressed(KEY_MINUS)) nights--;
+				if (IsKeyPressed(KEY_P)) {
+					int option, option2;
+					std::cout << "What do you want to do? Skip to night(1), spawn ghosts(2), kill all ghosts(3) >";
+					std::cin >> option;
+					switch (option) {
+					case 1:
+						std::cout << "Which night? >";
+						std::cin >> option2;
+						nights = option2;
+						break;
+					case 2:
+						std::cout << "How many ghosts? >";
+						std::cin >> option2;
+						ghostHandler.SpawnGhosts(option2);
+						break;
+					case 3:
+						std::cout << "GHOSTINATOR 99000-HX deployed <3\n";
+						ghostHandler.KillAllGhosts();
+					default:
+						std::cout << "Invalid option.\n";
+						break;
+					}
+				}
+			}
+
 			if (!isNight) {
 				if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L)) {
 					isNight = true;
@@ -267,21 +302,18 @@ int WinMain(int argc, char** argv) {
 					// playerHealth = 100;
 				}
 			}
-			
-			if (isNight) {
-				ghostHandler.GhostsUpdate(MassShoot::Camera::GetCameraPosition());
-				playerHealth -= ghostHandler.CheckForGhostCollision(MassShoot::Camera::GetCollider());
-				if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-					ghostHandler.CheckForHarmedGhosts(GetMouseRay({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() / 2 }, MassShoot::Camera::GetCamera()));
-				}
-				if (ghostHandler.GetGhostCount() == 0) {
-					MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox2.png");
-					isNight = false;
-				}
-				if (playerHealth <= 0) {
-					menuEnum = 3;
-				}
-				
+
+			ghostHandler.GhostsUpdate(MassShoot::Camera::GetCameraPosition());
+			playerHealth -= ghostHandler.CheckForGhostCollision(MassShoot::Camera::GetCollider());
+			if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+				ghostHandler.CheckForHarmedGhosts(GetMouseRay({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() / 2 }, MassShoot::Camera::GetCamera()));
+			}
+			if (ghostHandler.GetGhostCount() == 0 && isNight) {
+				MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox2.png");
+				isNight = false;
+			}
+			if (playerHealth <= 0) {
+				menuEnum = 3;
 			}
 			
 			MassShoot::Camera::StopCameraFrame();
@@ -310,7 +342,7 @@ int WinMain(int argc, char** argv) {
 			if (!isPaused) { 
 				headsUpDisplay.FrameFunc();
 			}
-			if (isNight) {
+			if (ghostHandler.GetGhostCount() > 0) {
 
 				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i\nHealth: %i", ghostHandler.GetGhostCount(), nights, playerHealth), { 10, 10 }, 30, 0, BLACK);
 				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i\nHealth: %i", ghostHandler.GetGhostCount(), nights, playerHealth), {0, 0}, 30, 0, WHITE);
@@ -343,6 +375,8 @@ int WinMain(int argc, char** argv) {
 					hsfile << nights;
 					hsfile.close();
 					highscore = nights;
+					isNight = false;
+					ghostHandler.KillAllGhosts();
 				}
 				MassShoot::Camera::InitCamera();
 				menuEnum = 1;

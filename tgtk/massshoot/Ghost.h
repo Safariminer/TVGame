@@ -8,6 +8,7 @@ namespace TVGame {
 		int health;
 		float speed;
 		Vector3 position;
+		bool hurt;
 		void CalculateNextPos(Vector3 camera);
 		void RenderGhost();
 	};
@@ -18,6 +19,7 @@ namespace TVGame {
 		GhostHandler() { GhostHandlerInit(); }
 		~GhostHandler();
 		void SpawnGhosts(int number);
+		void KillAllGhosts();
 		int CheckForGhostCollision(BoundingBox playerCollision);
 		void CheckForHarmedGhosts(Ray ray);
 		void GhostsUpdate(Vector3 camera);
