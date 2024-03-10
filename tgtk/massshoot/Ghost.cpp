@@ -5,6 +5,8 @@
 #include <raymath.h>
 #include "Fonts.h"
 #include "Particles.h"
+#include "Shop.h"
+int money = 0;
 bool GhostHandlerAvailable = false;
 MassShoot::Particles::ParticleSystem particleSystem;
 Model ghostModel;
@@ -399,13 +401,14 @@ void TVGame::GhostHandler::CheckForHarmedGhosts(Ray ray) {
 		currentBoundingBox.max = Vector3Add(ghostBoundingBox.max, ghosts.at(i).position);
 		RayCollision collision = GetRayCollisionBox(ray, currentBoundingBox);
 		if (collision.hit) {
-			ghosts.at(i).health-=5;
+			ghosts.at(i).health-= (5 + damageboosts);
             ghosts.at(i).hurt = true;
 		}
 		if (ghosts.at(i).health <= 0) { 
             particleSystem.SpawnParticles(100, 4, ghosts.at(i).position);
 			ghosts.erase(ghosts.begin() + i);
 			i--;
+            money += 1;
 		}
 	}
 }

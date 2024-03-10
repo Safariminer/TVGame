@@ -164,6 +164,7 @@
     <ClCompile Include="Multiplayer.cpp" />
     <ClCompile Include="Particles.cpp" />
     <ClCompile Include="PauseMenu.cpp" />
+    <ClCompile Include="Shop.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="titles.cpp" />
     <ClCompile Include="UI.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="Particles.h" />
     <ClInclude Include="PauseMenu.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Shop.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="titles.h" />
     <ClInclude Include="UI.h" />

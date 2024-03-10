@@ -96,7 +96,7 @@ VITAL_FUNC MassShoot::Engine::InitEngine(int width, int height, int fps, std::st
 	InitWindow(width, height, title.c_str());
 	SetTargetFPS(fps);
     consoleFont = LoadFontEx("massshoot/sys/CozetteVector.otf", 100, 0, 360);
-	InitAudioDevice();
+	// InitAudioDevice();
 }
 
 bool consoleRender;

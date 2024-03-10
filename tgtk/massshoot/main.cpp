@@ -17,6 +17,7 @@
 #include "titles.h"
 #include "ExternMap.h"
 #include <filesystem>
+#include "Shop.h"
 #include "Ghost.h"
 
 
@@ -54,7 +55,11 @@ int playerHealth = 100;
 bool debugMenu = false;
 int main(int argc, char** argv) {
 	monitor = GetCurrentMonitor();
+
 	MassShoot::Scripting::InitChai();
+	
+	
+	bool isShopOpen = false;
 	if (!std::filesystem::exists("highscore.tgtk")) {
 		std::ofstream hsfile("highscore.tgtk");
 		hsfile << "0";
@@ -76,7 +81,7 @@ int main(int argc, char** argv) {
 	// MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox.png");
 	MassShoot::Camera::InitCamera();
 	// MassShoot::Camera::LockCamera();
-
+	Shop shopDisplay;
 	MassShoot::Fonts::LoadFonts();
 	Texture2D startup = LoadTexture("massshoot/menus/startup.png");
 	Texture2D logo = LoadTexture("massshoot/menus/logo.png");
@@ -266,6 +271,7 @@ int main(int argc, char** argv) {
 			// DrawRay(GetMouseRay({ (float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, MassShoot::Camera::GetCamera()), RED);
 			
 			if (IsKeyDown(KEY_LEFT_CONTROL)) {
+				if (IsKeyPressed(KEY_O)) isShopOpen = true;
 				if (IsKeyPressed(KEY_EQUAL)) nights++;
 				if (IsKeyPressed(KEY_MINUS)) nights--;
 				if (IsKeyPressed(KEY_P)) {
@@ -336,21 +342,53 @@ int main(int argc, char** argv) {
 			if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && !isPaused) {
 				mkinfinite.Shoot();
 			}*/
-			if (isPaused) {
-				pauseMenu.FrameFunc();
+			if (isNight) {
+				DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {30, 30, 60, 100});
 			}
-			if (!isPaused) { 
-				headsUpDisplay.FrameFunc();
+			if (isShopOpen) {
+				shopDisplay.FrameFunc();
+				if (IsKeyPressed(KEY_ESCAPE)) isShopOpen = false;
 			}
+			else{
+				if (isPaused) {
+					pauseMenu.FrameFunc();
+				}
+				if (!isPaused) { 
+					headsUpDisplay.FrameFunc();
+				}
+			}
+
 			if (ghostHandler.GetGhostCount() > 0) {
 
-				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i\nHealth: %i", ghostHandler.GetGhostCount(), nights, playerHealth), { 10, 10 }, 30, 0, BLACK);
-				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i\nHealth: %i", ghostHandler.GetGhostCount(), nights, playerHealth), {0, 0}, 30, 0, WHITE);
+				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i\nHealth: %i\nMoney: %i", ghostHandler.GetGhostCount(), nights, playerHealth, money), { 10, 10 }, 30, 0, BLACK);
+				DrawTextEx(textFont, TextFormat("Ghosts left: %i\nNight: %i\nHealth: %i\nMoney: %i", ghostHandler.GetGhostCount(), nights, playerHealth, money), {0, 0}, 30, 0, WHITE);
+			}
+			else{
+				DrawTextEx(textFont, TextFormat("Health: %i\nMoney: %i", playerHealth, money), { 10, 10 }, 30, 0, BLACK);
+				DrawTextEx(textFont, TextFormat("Health: %i\nMoney: %i", playerHealth, money), { 0, 0 }, 30, 0, WHITE);
 			}
 			MassShoot::StoryTools::DisplayTitle(map.title, map.subtitle);
 			DrawText("+", (GetScreenWidth() / 2) - 3, (GetScreenHeight() / 2) - 3, 6, WHITE);
-			// Vector3 camPos = MassShoot::Camera::GetCameraPosition();
-			// printf("X: %f | Y: %f | Z: %f\n", camPos.x, camPos.y, camPos.z);
+			Vector3 camPos = MassShoot::Camera::GetCameraPosition();
+			if (camPos.x > 17.5 && camPos.x < 35 && camPos.z > -49 && camPos.z < -38 && !isNight) {
+				DrawTextEx(textFont, "Press E to start night...", { (float)GetScreenWidth() / 2 - MeasureTextEx(textFont, "Press E to start night...", 30, 0).x / 2 + 10, (float)GetScreenHeight() - 60 + 10}, 30, 0, BLACK);
+				DrawTextEx(textFont, "Press E to start night...", { (float)GetScreenWidth() / 2 - MeasureTextEx(textFont, "Press E to start night...", 30, 0).x / 2, (float)GetScreenHeight() - 60 }, 30, 0, WHITE);
+				if (IsKeyPressed(KEY_E)) {
+					isNight = true;
+					MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox3.png");
+					nights++;
+					ghostHandler.SpawnGhosts(5 * nights * nights);
+				}
+			}
+			if (camPos.x > 64 && camPos.x < 69 && camPos.z > -49 && camPos.z < -45 && !isNight) {
+				DrawTextEx(textFont, "Go online...", { (float)GetScreenWidth() / 2 - MeasureTextEx(textFont, "Go online...", 30, 0).x / 2 + 10, (float)GetScreenHeight() - 60 + 10 }, 30, 0, BLACK);
+				DrawTextEx(textFont, "Go online...", { (float)GetScreenWidth() / 2 - MeasureTextEx(textFont, "Go online...", 30, 0).x / 2, (float)GetScreenHeight() - 60 }, 30, 0, WHITE);
+				if (IsKeyPressed(KEY_E)) {
+					MassShoot::Camera::UnlockCamera();
+					isShopOpen = true;
+				}
+			}
+			printf("X: %f | Y: %f | Z: %f\n", camPos.x, camPos.y, camPos.z);
 
 			DrawFPS(1000, 0);
 			// MassShoot::Camera::GravityDisplay();

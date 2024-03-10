@@ -1,1 +1,10 @@
 grass massshoot/textures/photos/grass.png
+brick massshoot/textures/brick.png
+metal massshoot/textures/metal.png
+wood massshoot/textures/wood.png
+white massshoot/textures/white.png
+red massshoot/textures/red.png
+plastic1 massshoot/textures/plastic1.png
+plastic2 massshoot/textures/plastic2.png
+decoder massshoot/textures/decoder.png
+computer massshoot/textures/computer.png
