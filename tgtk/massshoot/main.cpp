@@ -26,6 +26,7 @@ MassShoot::Maps::Map map;
 MassShoot::Weapons::WeaponSuite suite;
 
 Sound gunshot;
+float vacuumLoudness = 0.0f;
 
 int AmmoSetter = -1;
 
@@ -108,7 +109,8 @@ int main(int argc, char** argv) {
 	
 	Music footsteps = LoadMusicStream("massshoot/sounds/ilikefeet.mp3");
 	Music vacuum = LoadMusicStream("massshoot/sounds/vacuum.wav");
-
+	footsteps.looping = true;
+	vacuum.looping = true;
 	PlayMusicStream(splashMusic);
 	
 	
@@ -195,6 +197,7 @@ int main(int argc, char** argv) {
 				DrawRectangle(0, GetScreenHeight()-80, GetScreenWidth()-180, 80, BLUE);
 				DrawTextEx(textFont, TextFormat("High score: %i nights", highscore), { 12, (float)GetScreenHeight() - 48}, 20, 0, DARKBLUE);
 				DrawTextEx(textFont, TextFormat("High score: %i nights", highscore), { 10, (float)GetScreenHeight() - 50}, 20, 0, WHITE);
+				
 			}
 			
 			
@@ -224,6 +227,8 @@ int main(int argc, char** argv) {
 					map.LoadMap(firstmap);
 					StopMusicStream(mainMenuMusic);
 					PlaySound(startGame);
+					PlayMusicStream(footsteps);
+					PlayMusicStream(vacuum);
 					MassShoot::Camera::LockCamera();
 				}
 				if (GetMouseX() > (float)GetScreenWidth() - ((float)GetScreenWidth() / 5) * 2 && GetMouseX() < (float)GetScreenWidth() - ((float)GetScreenWidth() / 5) * 2 + 128 &&
@@ -271,6 +276,7 @@ int main(int argc, char** argv) {
 			map.RenderBoxes();
 			map.RenderBillboards();
 			
+			
 			// DrawRay(GetMouseRay({ (float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, MassShoot::Camera::GetCamera()), RED);
 			
 			/*if (IsKeyDown(KEY_LEFT_CONTROL)) {
@@ -313,7 +319,7 @@ int main(int argc, char** argv) {
 			//}
 
 			ghostHandler.GhostsUpdate(MassShoot::Camera::GetCameraPosition());
-			// playerHealth -= ghostHandler.CheckForGhostCollision(MassShoot::Camera::GetCollider());
+			playerHealth -= ghostHandler.CheckForGhostCollision(MassShoot::Camera::GetCollider());
 			if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 				ghostHandler.CheckForHarmedGhosts(GetMouseRay({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() / 2 }, MassShoot::Camera::GetCamera()));
 			}
@@ -322,6 +328,8 @@ int main(int argc, char** argv) {
 				isNight = false;
 			}
 			if (playerHealth <= 0) {
+				StopMusicStream(vacuum);
+				StopMusicStream(footsteps);
 				menuEnum = 3;
 			}
 			
@@ -384,8 +392,8 @@ int main(int argc, char** argv) {
 				}
 			}
 			if (camPos.x > 64 && camPos.x < 69 && camPos.z > -49 && camPos.z < -45 && !isNight) {
-				DrawTextEx(textFont, "Go online...", { (float)GetScreenWidth() / 2 - MeasureTextEx(textFont, "Go online...", 30, 0).x / 2 + 10, (float)GetScreenHeight() - 60 + 10 }, 30, 0, BLACK);
-				DrawTextEx(textFont, "Go online...", { (float)GetScreenWidth() / 2 - MeasureTextEx(textFont, "Go online...", 30, 0).x / 2, (float)GetScreenHeight() - 60 }, 30, 0, WHITE);
+				DrawTextEx(textFont, "Press E to go online...", { (float)GetScreenWidth() / 2 - MeasureTextEx(textFont, "Press E to go online...", 30, 0).x / 2 + 10, (float)GetScreenHeight() - 60 + 10 }, 30, 0, BLACK);
+				DrawTextEx(textFont, "Press E to go online...", { (float)GetScreenWidth() / 2 - MeasureTextEx(textFont, "Press E to go online...", 30, 0).x / 2, (float)GetScreenHeight() - 60 }, 30, 0, WHITE);
 				if (IsKeyPressed(KEY_E)) {
 					MassShoot::Camera::UnlockCamera();
 					isShopOpen = true;
@@ -395,7 +403,25 @@ int main(int argc, char** argv) {
 
 			DrawFPS(1000, 0);
 			// MassShoot::Camera::GravityDisplay();
-			
+			if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D)) {
+				SetMusicVolume(footsteps, 1.0f);
+			}
+			else {
+				SetMusicVolume(footsteps, 0);
+			}
+
+			UpdateMusicStream(footsteps);
+
+			if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+				if (vacuumLoudness < 1.0f) vacuumLoudness += 0.025f;
+			}
+			else {
+				if (vacuumLoudness > 0.0f) vacuumLoudness -= 0.025f;
+			}
+
+			SetMusicVolume(vacuum, vacuumLoudness);
+			SetMusicPitch(vacuum, vacuumLoudness);
+			UpdateMusicStream(vacuum);
 			break;
 		case 3:
 			BeginDrawing();

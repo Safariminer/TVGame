@@ -11,7 +11,7 @@ UI_FUNC Shop::FrameFunc()
 	DrawRectangle(52, 102, GetScreenWidth() - 104, GetScreenHeight() - 154, GRAY);
 	DrawTextEx(textFont, "Health up (10$)", { 54, 104 }, 30, 0, BLACK);
 	DrawTextEx(textFont, "Damage up (20$)", { 54, 134 }, 30, 0, BLACK);
-	DrawTextEx(textFont, TextFormat("Money: %i", money), { 54, 134 }, 30, 0, BLACK);
+	DrawTextEx(textFont, TextFormat("Money: %i", money), { 54, 194 }, 30, 0, BLACK);
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		Vector2 mousePos = GetMousePosition();
 		if (mousePos.x > 54 && mousePos.y > 104 && mousePos.x < GetScreenWidth() - 54 && mousePos.y < 164) {

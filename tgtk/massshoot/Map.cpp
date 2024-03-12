@@ -212,8 +212,8 @@ RENDERING_FUNC MassShoot::Maps::Map::RenderBoxes()
 
 		Vector3 center = { collisions.at(i).min.x + size.x / 2.0f, collisions.at(i).min.y + size.y / 2.0f, collisions.at(i).min.z + size.z / 2.0f };
 		// int color = 255 / collisions.size() * i; {255, (unsigned char)color, 0, 255}
-		
-		DrawCubeTexture(mapTextures.at(textures.at(i)), center, size.x, size.y, size.z, WHITE);
+		if(textures.at(i) != "invis")
+			DrawCubeTexture(mapTextures.at(textures.at(i)), center, size.x, size.y, size.z, WHITE);
 		
 		
 	}

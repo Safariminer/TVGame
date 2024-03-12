@@ -8,3 +8,5 @@ plastic1 massshoot/textures/plastic1.png
 plastic2 massshoot/textures/plastic2.png
 decoder massshoot/textures/decoder.png
 computer massshoot/textures/computer.png
+moss massshoot/textures/moss.png
+invis massshoot/textures/invis.png
