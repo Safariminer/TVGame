@@ -54,7 +54,10 @@ bool isNight = false;
 int nights = 0;
 int playerHealth = 100;
 bool debugMenu = false;
-int main(int argc, char** argv) {
+
+
+
+int WinMain(int argc, char** argv) {
 	monitor = GetCurrentMonitor();
 
 	MassShoot::Scripting::InitChai();
@@ -450,6 +453,7 @@ int main(int argc, char** argv) {
 				playerHealth = 100;
 				nights = 0;
 				MassShoot::Camera::UnlockCamera();
+				PlayMusicStream(mainMenuMusic);
 			}
 			EndDrawing();
 			
@@ -468,3 +472,6 @@ int main(int argc, char** argv) {
 
 }
 
+int main(int argc, char** argv) {
+	WinMain(argc, argv);
+}
