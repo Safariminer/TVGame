@@ -106,6 +106,9 @@ int main(int argc, char** argv) {
 	Sound startGame = LoadSound("massshoot/music/startgame.mp3");
 	MassShoot::Weapons::InitWeaponCamera();
 	
+	Music footsteps = LoadMusicStream("massshoot/sounds/ilikefeet.mp3");
+	Music vacuum = LoadMusicStream("massshoot/sounds/vacuum.wav");
+
 	PlayMusicStream(splashMusic);
 	
 	
@@ -270,7 +273,7 @@ int main(int argc, char** argv) {
 			
 			// DrawRay(GetMouseRay({ (float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, MassShoot::Camera::GetCamera()), RED);
 			
-			if (IsKeyDown(KEY_LEFT_CONTROL)) {
+			/*if (IsKeyDown(KEY_LEFT_CONTROL)) {
 				if (IsKeyPressed(KEY_O)) isShopOpen = true;
 				if (IsKeyPressed(KEY_EQUAL)) nights++;
 				if (IsKeyPressed(KEY_MINUS)) nights--;
@@ -297,20 +300,20 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
-			}
+			}*/
 
-			if (!isNight) {
-				if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L)) {
-					isNight = true;
-					MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox3.png");
-					nights++;
-					ghostHandler.SpawnGhosts(5 * nights * nights);
-					// playerHealth = 100;
-				}
-			}
+			//if (!isNight) {
+			//	if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L)) {
+			//		isNight = true;
+			//		MassShoot::Skybox::LoadSkybox("massshoot/textures/skybox3.png");
+			//		nights++;
+			//		ghostHandler.SpawnGhosts(5 * nights * nights);
+			//		// playerHealth = 100;
+			//	}
+			//}
 
 			ghostHandler.GhostsUpdate(MassShoot::Camera::GetCameraPosition());
-			playerHealth -= ghostHandler.CheckForGhostCollision(MassShoot::Camera::GetCollider());
+			// playerHealth -= ghostHandler.CheckForGhostCollision(MassShoot::Camera::GetCollider());
 			if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 				ghostHandler.CheckForHarmedGhosts(GetMouseRay({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() / 2 }, MassShoot::Camera::GetCamera()));
 			}

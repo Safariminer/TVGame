@@ -26,6 +26,10 @@ void MassShoot::Particles::ParticleSystem::SpawnParticles(int number, int size, 
 		newParticle.size = size;
 		newParticle.life = 0;
 		particles.push_back(newParticle);
+		if (particles.size() > 5000) {
+			particles.erase(particles.begin());
+			printf("PARTICLE SYSTEM WARNING: OVERFLOW\n");
+		}
 		printf("New Particle: %f %f %f %f %f %f %i %i\n", newParticle.position.x, newParticle.position.y, newParticle.position.z, newParticle.velocity.x, newParticle.velocity.y, newParticle.velocity.z, newParticle.size, newParticle.life);
 	}
 }

@@ -384,33 +384,63 @@ void TVGame::GhostHandler::KillAllGhosts() {
 int TVGame::GhostHandler::CheckForGhostCollision(BoundingBox playerCollision) {
 	int collisions = 0;
 	BoundingBox ghostBoundingBox = GetMeshBoundingBox(ghostModel.meshes[0]);
-	for (int i = 0; i < ghosts.size(); i++) {
-		BoundingBox currentBoundingBox;
-		currentBoundingBox.min = Vector3Add(ghostBoundingBox.min, ghosts.at(i).position);
-		currentBoundingBox.max = Vector3Add(ghostBoundingBox.max, ghosts.at(i).position);
-		if (CheckCollisionBoxes(currentBoundingBox, playerCollision)) collisions++;
-	}
+    if(ghosts.size() <= 1000){
+	    for (int i = 0; i < ghosts.size(); i++) {
+	    	BoundingBox currentBoundingBox;
+	    	currentBoundingBox.min = Vector3Add(ghostBoundingBox.min, ghosts.at(i).position);
+	    	currentBoundingBox.max = Vector3Add(ghostBoundingBox.max, ghosts.at(i).position);
+	    	if (CheckCollisionBoxes(currentBoundingBox, playerCollision)) collisions++;
+	    }
+    }
+    if (ghosts.size() > 1000) {
+        for (int i = 0; i < 1000; i++) {
+            BoundingBox currentBoundingBox;
+            currentBoundingBox.min = Vector3Add(ghostBoundingBox.min, ghosts.at(i).position);
+            currentBoundingBox.max = Vector3Add(ghostBoundingBox.max, ghosts.at(i).position);
+            if (CheckCollisionBoxes(currentBoundingBox, playerCollision)) collisions++;
+        }
+    }
 	return collisions;
 }
 
 void TVGame::GhostHandler::CheckForHarmedGhosts(Ray ray) {
 	BoundingBox ghostBoundingBox = GetMeshBoundingBox(ghostModel.meshes[0]);
-	for (int i = 0; i < ghosts.size(); i++) {
-		BoundingBox currentBoundingBox;
-		currentBoundingBox.min = Vector3Add(ghostBoundingBox.min, ghosts.at(i).position);
-		currentBoundingBox.max = Vector3Add(ghostBoundingBox.max, ghosts.at(i).position);
-		RayCollision collision = GetRayCollisionBox(ray, currentBoundingBox);
-		if (collision.hit) {
-			ghosts.at(i).health-= (5 + damageboosts);
-            ghosts.at(i).hurt = true;
-		}
-		if (ghosts.at(i).health <= 0) { 
-            particleSystem.SpawnParticles(100, 4, ghosts.at(i).position);
-			ghosts.erase(ghosts.begin() + i);
-			i--;
-            money += 1;
-		}
-	}
+    if(ghosts.size() <= 1000){
+	    for (int i = 0; i < ghosts.size(); i++) {
+	    	BoundingBox currentBoundingBox;
+	    	currentBoundingBox.min = Vector3Add(ghostBoundingBox.min, ghosts.at(i).position);
+	    	currentBoundingBox.max = Vector3Add(ghostBoundingBox.max, ghosts.at(i).position);
+	    	RayCollision collision = GetRayCollisionBox(ray, currentBoundingBox);
+	    	if (collision.hit) {
+	    		ghosts.at(i).health-= (5 + damageboosts);
+                ghosts.at(i).hurt = true;
+	    	}
+	    	if (ghosts.at(i).health <= 0) { 
+                particleSystem.SpawnParticles(100, 4, ghosts.at(i).position);
+	    		ghosts.erase(ghosts.begin() + i);
+	    		i--;
+                money += 1;
+	    	}
+	    }
+    }
+    if (ghosts.size() > 1000) {
+        for (int i = 0; i < 1000; i++) {
+            BoundingBox currentBoundingBox;
+            currentBoundingBox.min = Vector3Add(ghostBoundingBox.min, ghosts.at(i).position);
+            currentBoundingBox.max = Vector3Add(ghostBoundingBox.max, ghosts.at(i).position);
+            RayCollision collision = GetRayCollisionBox(ray, currentBoundingBox);
+            if (collision.hit) {
+                ghosts.at(i).health -= (5 + damageboosts);
+                ghosts.at(i).hurt = true;
+            }
+            if (ghosts.at(i).health <= 0) {
+                particleSystem.SpawnParticles(100, 4, ghosts.at(i).position);
+                ghosts.erase(ghosts.begin() + i);
+                i--;
+                money += 1;
+            }
+        }
+    }
 }
 
 void TVGame::GhostHandler::GhostsUpdate(Vector3 camera) {

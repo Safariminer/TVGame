@@ -19,7 +19,7 @@ UI_FUNC Shop::FrameFunc()
 				playerHealth += 5;
 				money -= 10;
 			}
-			else if(money >= 20) {
+			else if (money >= 20) {
 				damageboosts += 1;
 				money -= 20;
 			}
